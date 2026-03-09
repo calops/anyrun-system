@@ -57,7 +57,6 @@ const ACTIONS: &[SystemAction] = &[
 
 #[init]
 fn init(_config_dir: RString) -> () {
-    println!("System plugin initialized");
 }
 
 #[info]
@@ -71,7 +70,6 @@ fn info() -> PluginInfo {
 #[get_matches]
 fn get_matches(input: RString, _data: &mut ()) -> RVec<Match> {
     let input_str = input.to_string().to_lowercase();
-    eprintln!("System plugin searching for: '{}'", input_str);
 
     let matches: Vec<Match> = ACTIONS
         .iter()
@@ -89,7 +87,6 @@ fn get_matches(input: RString, _data: &mut ()) -> RVec<Match> {
         })
         .collect();
 
-    eprintln!("System plugin found {} matches", matches.len());
     matches.into()
 }
 
@@ -97,7 +94,6 @@ fn get_matches(input: RString, _data: &mut ()) -> RVec<Match> {
 fn handler(selection: Match, _data: &mut ()) -> HandleResult {
     if let ROption::RSome(id) = selection.id {
         if let Some(action) = ACTIONS.iter().find(|a| a.id == id) {
-            eprintln!("Executing command: {}", action.command);
             let _ = Command::new("sh").arg("-c").arg(action.command).spawn();
         }
     }
