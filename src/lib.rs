@@ -63,7 +63,7 @@ fn init(_config_dir: RString) -> () {
 fn info() -> PluginInfo {
     PluginInfo {
         name: "System".into(),
-        icon: "system-shutdown".into(),
+        icon: "preferences-system".into(),
     }
 }
 
