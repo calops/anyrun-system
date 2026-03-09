@@ -12,6 +12,32 @@
         pkgs = nixpkgs.legacyPackages.${system};
       in
       {
+        packages.default = pkgs.rustPlatform.buildRustPackage {
+          pname = "anyrun-system";
+          version = "0.1.0";
+
+          src = ./.;
+
+          cargoLock = {
+            lockFile = ./Cargo.lock;
+            allowBuiltinFetchGit = true;
+          };
+
+          nativeBuildInputs = [
+            pkgs.pkg-config
+          ];
+
+          buildPhase = ''
+            cargo build --release --lib
+          '';
+
+          installPhase = ''
+            install -Dm 0755 target/release/libanyrun_system.so $out/lib/libanyrun-system.so
+          '';
+
+          doCheck = false;
+        };
+
         formatter = pkgs.nixfmt-rfc-style;
 
         devShells.default = pkgs.mkShell {
