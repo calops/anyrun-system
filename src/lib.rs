@@ -57,7 +57,7 @@ const ACTIONS: &[SystemAction] = &[
 
 #[init]
 fn init(_config_dir: RString) -> () {
-    eprintln!("System plugin initialized");
+    println!("System plugin initialized");
 }
 
 #[info]
@@ -76,7 +76,9 @@ fn get_matches(input: RString, _data: &mut ()) -> RVec<Match> {
     let matches: Vec<Match> = ACTIONS
         .iter()
         .filter(|action| {
-            input_str.is_empty() || action.title.to_lowercase().contains(&input_str) || action.name.contains(&input_str)
+            input_str.is_empty()
+                || action.title.to_lowercase().contains(&input_str)
+                || action.name.contains(&input_str)
         })
         .map(|action| Match {
             title: action.title.into(),
