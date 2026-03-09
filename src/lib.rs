@@ -1,4 +1,4 @@
-use abi_stable::std_types::{RString, RVec, ROption};
+use abi_stable::std_types::{ROption, RString, RVec};
 use anyrun_plugin::*;
 use std::process::Command;
 
@@ -57,7 +57,7 @@ const ACTIONS: &[SystemAction] = &[
 
 #[init]
 fn init(_config_dir: RString) -> () {
-    // No config for now
+    eprintln!("System plugin initialized");
 }
 
 #[info]
@@ -71,10 +71,12 @@ fn info() -> PluginInfo {
 #[get_matches]
 fn get_matches(input: RString, _data: &mut ()) -> RVec<Match> {
     let input_str = input.to_string().to_lowercase();
-    ACTIONS
+    eprintln!("System plugin searching for: '{}'", input_str);
+
+    let matches: Vec<Match> = ACTIONS
         .iter()
         .filter(|action| {
-            action.title.to_lowercase().contains(&input_str) || action.name.contains(&input_str)
+            input_str.is_empty() || action.title.to_lowercase().contains(&input_str) || action.name.contains(&input_str)
         })
         .map(|action| Match {
             title: action.title.into(),
@@ -83,18 +85,18 @@ fn get_matches(input: RString, _data: &mut ()) -> RVec<Match> {
             description: ROption::RSome(format!("Execute: {}", action.command).into()),
             id: ROption::RSome(action.id),
         })
-        .collect::<Vec<_>>()
-        .into()
+        .collect();
+
+    eprintln!("System plugin found {} matches", matches.len());
+    matches.into()
 }
 
 #[handler]
 fn handler(selection: Match, _data: &mut ()) -> HandleResult {
     if let ROption::RSome(id) = selection.id {
         if let Some(action) = ACTIONS.iter().find(|a| a.id == id) {
-            let _ = Command::new("sh")
-                .arg("-c")
-                .arg(action.command)
-                .spawn();
+            eprintln!("Executing command: {}", action.command);
+            let _ = Command::new("sh").arg("-c").arg(action.command).spawn();
         }
     }
     HandleResult::Close
