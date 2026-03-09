@@ -44,6 +44,8 @@
       {
         packages.default = anyrun-system;
 
+        formatter = pkgs.nixfmt-rfc-style;
+
         devShells.default = pkgs.mkShell {
           packages = [
             pkgs.cargo
